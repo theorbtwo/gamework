@@ -1,4 +1,4 @@
 gamework
 ========
 
-Framework for two-player "coorospondance" games with ranking, etc.
+Framework for two-player "correspondence" games with ranking, etc.
