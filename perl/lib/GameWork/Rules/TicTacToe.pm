@@ -1,4 +1,4 @@
-package GameWOrk::Rules::TicTacToe;
+package GameWork::Rules::TicTacToe;
 use Moose;
 use MooseX::StrictConstructor;
 
@@ -47,15 +47,16 @@ sub score {
   push @combos, [[0, 2], [1, 1], [2, 0]];
 
   for my $combo (@combos) {
-    my $v = $self->at($combo[0]);
+    # Fixme: remove implicit three.
+    my $v = $self->at($combo->[0]);
     next if $v == -1;
-    if ($self->at($combo[1]) == $v and
-        $self->at($combo[2]) == $v) {
+    if ($self->at($combo->[1]) == $v and
+        $self->at($combo->[2]) == $v) {
       if ($v == 0) {
         # If any row has all zeros, player zero has won, so the score from the point of view of player zero is 1.
-        return 1;
+        return [1, 0];
       } else {
-        return 0;
+        return [0, 1];
       }
     }
   }
@@ -70,7 +71,7 @@ sub score {
   }
 
   # There were no spaces, the game is tied.
-  return 0.5;
+  return [0.5, 0.5];
 }
 
 =item valid_move
@@ -93,6 +94,26 @@ sub valid_move {
   } else {
     die "Strange mover -- from ".$old->current_turn." to ".$new->current_turn;
   }
+
+  my $moves;
+
+  for my $x (0..2) {
+    for my $y (0..2) {
+      if ($old->at([$x, $y]) == $old->at([$x, $y])) {
+        # boring case
+      } elsif ($old->at([$x, $y]) == -1 and $new->at([$x, $y]) == $mover) {
+        $moves++;
+      } else {
+        die "Invalid move: [$x, $y] changed from ".$old->at([$x, $y])." to ".$new->at([$x, $y])." while it was player $mover\'s turn";
+      }
+    }
+  }
+
+  if ($moves != 1) {
+    die "Moved $moves times, expected 1?";
+  }
+
+  return 1;
 }
 
 
