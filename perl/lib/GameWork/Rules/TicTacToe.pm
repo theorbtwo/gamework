@@ -2,6 +2,8 @@ package GameWork::Rules::TicTacToe;
 use Moose;
 use MooseX::StrictConstructor;
 
+extends 'GameWork::Rules';
+
 # At each row/col (0..2), the value of grid is -1 if nobody has played there, or 0 or 1 for player 0 or 1.
 
 has 'grid', is => 'ro', default => sub {
@@ -16,7 +18,7 @@ has 'grid', is => 'ro', default => sub {
 };
 
 # which player's turn is it.
-has 'current_turn', is => 'ro', default => 0;
+has 'current_turn', is => 'rw', default => 0;
 
 sub at {
   my ($self, $coord) = @_;
@@ -99,7 +101,11 @@ sub valid_move {
 
   for my $x (0..2) {
     for my $y (0..2) {
-      if ($old->at([$x, $y]) == $old->at([$x, $y])) {
+      my $o = $old->at([$x, $y]);
+      my $n = $new->at([$x, $y]);
+      #print "[$x, $y] -- $o -> $n\n";
+
+      if ($old->at([$x, $y]) == $new->at([$x, $y])) {
         # boring case
       } elsif ($old->at([$x, $y]) == -1 and $new->at([$x, $y]) == $mover) {
         $moves++;
@@ -114,6 +120,27 @@ sub valid_move {
   }
 
   return 1;
+}
+
+sub pretty {
+  my ($self) = @_;
+
+  my $out = '';
+
+  for my $x (0..2) {
+    for my $y (0..2) {
+      my $c = {0 => 'X',
+               1 => 'O',
+               -1 => '.'}->{$self->at([$x, $y])};
+      $out .= $c;
+    }
+    $out .= "\n";
+  }
+
+  my $p = $self->current_turn;
+  $out .= "Currently player $p\'s turn\n\n";
+
+  return $out;
 }
 
 
