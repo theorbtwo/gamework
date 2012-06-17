@@ -7,7 +7,7 @@ use Class::MOP;
 my $j = JSON->new;
 $j->ascii(1);
 # Temp; change to 0 once we're fairly certian it's working.
-$j->pretty(1);
+$j->pretty(0);
 
 # Use ->TO_JSON to convert blessed objects to json.
 $j->allow_blessed(1);
