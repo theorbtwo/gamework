@@ -20,6 +20,10 @@ use Catalyst qw/
     -Debug
     ConfigLoader
     Static::Simple
+    Session
+    Session::Store::FastMmap
+    Session::State::Cookie
+    Authentication
 /;
 
 extends 'Catalyst';
@@ -36,11 +40,33 @@ our $VERSION = '0.01';
 # local deployment.
 
 __PACKAGE__->config(
-    name => 'GameWork::Web',
-    # Disable deprecated behavior needed by old applications
-    disable_component_resolution_regex_fallback => 1,
-    enable_catalyst_header => 1, # Send X-Catalyst header
-);
+                    name => 'GameWork::Web',
+                    # Disable deprecated behavior needed by old applications
+                    disable_component_resolution_regex_fallback => 1,
+                    enable_catalyst_header => 1, # Send X-Catalyst header
+                    default_view => 'JSON',
+                    
+                    'Plugin::Authentication' => {
+                                                 default_realm => 'email_pass',
+                                                 realms => {
+                                                            email_pass => {
+                                                                           credential => {
+                                                                                          class => 'Password',
+                                                                                          password_field => 'password_hash',
+                                                                                          password_type => 'hashed',
+                                                                                          password_hash_type => 'SHA-1'
+                                                                                         },
+                                                                           store => {
+                                                                                     class => 'DBIx::Class',
+                                                                                     user_model => 'DB::Player',
+                                                                                     role_relation => 'roles',
+                                                                                     role_field => 'rolename',
+                                                                                    }
+                                                                          }
+                                                           }
+                                                }
+                   );
+
 
 # Start the application
 __PACKAGE__->setup();
