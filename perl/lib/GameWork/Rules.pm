@@ -2,6 +2,7 @@ package GameWork::Rules;
 use Moose;
 use MooseX::StrictConstructor;
 use JSON;
+use Class::MOP;
 
 my $j = JSON->new;
 $j->ascii(1);
@@ -35,6 +36,8 @@ sub deserialize {
       $self ne __PACKAGE__) {
     die "Expected a $self, got a $blessing";
   }
+
+  Class::MOP::load_class($blessing);
 
   bless $decoded->{d}, $blessing;
 
