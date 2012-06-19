@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.util.Log;
 
 /**
  * Utilities for device registration.
@@ -47,13 +48,16 @@ public class C2DMessaging {
      */
     public static void register(Context context,
             String senderId) {
-        Intent registrationIntent = new Intent(REQUEST_REGISTRATION_INTENT);
-        registrationIntent.setPackage(GSF_PACKAGE);
-        registrationIntent.putExtra(EXTRA_APPLICATION_PENDING_INTENT,
-                PendingIntent.getBroadcast(context, 0, new Intent(), 0));
-        registrationIntent.putExtra(EXTRA_SENDER, senderId);
-        context.startService(registrationIntent);
-        // TODO: if intent not found, notification on need to have GSF
+      Log.d("gamework", "at top of register");
+
+      Intent registrationIntent = new Intent(REQUEST_REGISTRATION_INTENT);
+      // registrationIntent.setPackage(GSF_PACKAGE);
+      registrationIntent.putExtra(EXTRA_APPLICATION_PENDING_INTENT,
+                                  PendingIntent.getBroadcast(context, 0, new Intent(), 0));
+      registrationIntent.putExtra(EXTRA_SENDER, senderId);
+      context.startService(registrationIntent);
+      // TODO: if intent not found, notification on need to have GSF
+      Log.d("gamework", "at bottom of register");
     }
 
     /**

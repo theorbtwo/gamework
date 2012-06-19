@@ -107,6 +107,8 @@ public abstract class C2DMBaseReceiver extends IntentService {
                 onMessage(context, intent);
             } else if (intent.getAction().equals(C2DM_RETRY)) {
                 C2DMessaging.register(context, senderId);
+            } else {
+              Log.v(TAG, "onHandleIntent got strange intent "+intent.getAction());
             }
         } finally {
             //  Release the power lock, so phone can get back to sleep.
@@ -151,10 +153,10 @@ public abstract class C2DMBaseReceiver extends IntentService {
         String error = intent.getStringExtra(EXTRA_ERROR);
         String removed = intent.getStringExtra(EXTRA_UNREGISTERED);
 
-        if (Log.isLoggable(TAG, Log.DEBUG)) {
+        //if (Log.isLoggable(TAG, Log.DEBUG)) {
             Log.d(TAG, "dmControl: registrationId = " + registrationId +
                 ", error = " + error + ", removed = " + removed);
-        }
+        //}
 
         if (removed != null) {
             // Remember we are unregistered
