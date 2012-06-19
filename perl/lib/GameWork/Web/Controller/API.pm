@@ -1,4 +1,4 @@
-package GameWork::Web::Controller::Root;
+package GameWork::Web::Controller::API;
 use Moose;
 use namespace::autoclean;
 use 5.10.0;
@@ -13,7 +13,7 @@ __PACKAGE__->config(namespace => '');
 
 =head1 NAME
 
-GameWork::Web::Controller::Root - Root Controller for GameWork::Web
+GameWork::Web::Controller::API - API Controller for GameWork::Web
 
 =head1 DESCRIPTION
 
