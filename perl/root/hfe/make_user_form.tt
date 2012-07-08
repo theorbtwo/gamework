@@ -1,0 +1,16 @@
+[% IF errors %]
+<div style="color: darkred; background: white">
+ <ul>
+  [% FOR e = errors %]
+   <li>[% e %]</li>
+  [% END %]
+ </ul>
+</div>
+[% END %]
+
+<form method="POST" action="make_user">
+ <div><label for="email">email address</label><input type="text" id="email" name="email"/></div>
+ <div><label for="passsword_1">password</label><input type="password" id="password_1" name="password_1"/></div>
+ <div><label for="passsword_2">password (again)</label><input type="password" id="password_2" name="password_2"/></div>
+ <input type="submit">
+</form>

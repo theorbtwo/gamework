@@ -22,13 +22,14 @@ has 'current_turn', is => 'rw', default => 0;
 
 sub at {
   my ($self, $coord) = @_;
+  print STDERR "at: $self $coord\n";
 
   $self->grid->[$coord->[0]][$coord->[1]];
 }
 
 =item score
 
-Should return C<undef> if the game hasn't finished, or a value between 0 and 1 (inclusive) that is the score from the POV of player 0.  (1=player 0 has won, 0=player 1 has won, 0.5=draw.)
+Should return C<undef> if the game hasn't finished, or an array-ref for the final score of each player.
 
 Note that the scores of the two players must always sum to 1.
 

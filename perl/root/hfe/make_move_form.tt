@@ -1,0 +1,137 @@
+<script src="/js/jquery.js" ></script>
+
+<script>
+var state;
+var my_player;
+var orig_state;
+
+jQuery(document).ready(function () {
+    orig_state = jQuery("#state").val();
+    state = jQuery.parseJSON(orig_state);
+    my_player = state.d.current_turn;
+
+    $(".cell").bind("click", {}, on_cell_click);
+});
+
+function on_cell_click(event) {
+    var id = this.id;
+    var a = id.split("_");
+    var x = a[1];
+    var y = a[2];
+
+    state = jQuery.parseJSON(orig_state);
+
+    state.d.grid[x][y] = my_player;
+    var image;
+
+    for (x=0; x<3; x++) {
+	for (y=0; y<3; y++) {
+	    if (state.d.grid[x][y] == -1) {
+		jQuery("#cell_"+x+"_"+y).html('<img src="/TicTacToe/empty.png">');
+	    } else if (state.d.grid[x][y] == 0) {
+		jQuery("#cell_"+x+"_"+y).html('<img src="/TicTacToe/X.png">');
+	    } else if (state.d.grid[x][y] == 1) {
+		jQuery("#cell_"+x+"_"+y).html('<img src="/TicTacToe/O.png">');
+	    } else {
+		alert("WTF?");
+	    }
+	}
+    }
+
+    if (my_player == 0) {
+	state.d.current_turn = 1;
+    } else if (my_player == 1) {
+	state.d.current_turn = 0;
+    }
+
+    update_state();
+}
+
+function update_state() {
+    jQuery("#state").val(JSON.stringify(state));
+}
+
+
+
+// // FIXME: I feel like there should be a better way to do this then rolling my own.
+// // Warning: May eat cpu/memory until terminated hard when given recursive structures.
+// function make_json(v) {
+//     var ret = "";
+    
+//     if ($.isArray(v)) {
+// 	ret = ret + "[";
+// 	for (e in v) {
+// 	    ret += make_json(v[e]);
+// 	    ret += ",";
+// 	}
+// 	ret += "]";
+	
+// 	return ret;
+//     } else if ($.isNumeric(v)) {
+// 	// the default toString conversion is fine for this.
+// 	return v;
+//     } else if ($.isPlainObject(v)) {
+// 	ret = ret + "{";
+// 	for (e in v) {
+// 	    console.debug(e);
+// 	    ret += make_json(e);
+// 	    ret += ":";
+// 	    ret += make_json(v[e]);
+// 	    ret += ",";
+// 	}
+// 	ret += "}";
+	
+// 	return ret;
+//     } else if (v.__proto__ == "".__proto__) {
+// 	// FIXME: escape v?
+// 	ret += '"' + v + '"';
+
+// 	return ret;
+//     } else {
+	
+// 	throw("make_json: unknown thingimy "+v);
+//     }
+// }
+
+</script>
+
+<div style="error">[% error %]</div>
+
+<form method="POST" action="make_move">
+ <input type="hidden" name="game_id" value="[% game.id %]" />
+ <textarea name="state" id="state">[% game.get_column('state') | html %]</textarea>
+
+ <hr />
+ <style>
+  table {border-spacing: 0px}
+
+  .row_0 {border-right: 1px solid black}
+  .row_2 {border-left: 1px solid black}
+
+  .col_0 {border-bottom: 1px solid black}
+  .col_2 {border-top: 1px solid black}
+ </style>
+ <table>
+  [% FOREACH x = [0..2] %]
+   <tr>
+    [% FOREACH y = [0..2] %]
+     <td id="cell_[%x%]_[%y%]" class="cell col_[%x%] row_[%y%]">
+      [% cell = game.state.at([x, y]) %]
+      [% IF cell == -1 %]
+       <img src="/TicTacToe/empty.png" />
+      [% ELSIF cell == 0 %]
+       <img src="/TicTacToe/X.png" />
+      [% ELSIF cell == 1 %]
+       <img src="/TicTacToe/O.png" />
+      [% ELSE %]
+       '[% cell %]'?
+      [% END %]
+     [% END %]
+    </tr>
+   </td>
+  [% END %]
+ </table>
+
+ <input type="submit" />
+
+</form>

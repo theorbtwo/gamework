@@ -1,0 +1,57 @@
+[% USE Dumper %]
+
+<table>
+ [% FOREACH g = games_info %]
+  <tr>
+   <form method="POST" action="generic_game_action">
+    <input type="hidden" name="game_id" value="[% g.id %]" />
+    <td>[% g.rules %]</td>
+    [% FOREACH p = g.players %]
+     <!-- [% Dumper.dump(g) %] -->
+     <td>
+      [% # FIXME: rejig so columns line up when there are more then two players per game %]
+      [% IF p.is_me %]
+       You
+      [% ELSE %]
+       [% p.email %]
+      [% END %]
+      [% IF p.is_done %](done)[% END %]
+      [% IF !p.has_accepted %](invitation pending)[% END %]
+      [% IF !loop.last() %] vs [% END %]
+     </td>
+    [% END %]
+    <td>
+     [% IF g.waiting_for_my_acceptance %]
+      <input type="submit" name="accept_game" value="Accept Invitation" />
+     [% ELSIF g.waiting_for_acceptance %]
+      [% # FIXME: plualize? %]
+      Waiting for another player to accept.
+     [% ELSIF g.my_turn %]
+      <a href="[% c.uri_for('/hfe/make_move', {game_id => g.id}) %]">Make move</a>
+     [% ELSE %]
+      Hmm?
+     [% END %]
+    </td>
+   </form>
+  </tr>
+ [% END %]
+</table>
+
+[% IF errors %]
+<div style="color: red; background: white">
+ <ul>
+  [% FOR e = errors %]
+   <li>[% e %]</li>
+  [% END %]
+ </ul>
+</div>
+[% END %]
+
+<form method="POST" action="create_game">
+ Start a new game of <select id="rules" name="rules">
+  [% # FIXME: Generate this list. %]
+  <option value="TicTacToe">Tic-Tac-Toe</option>
+ </select>
+ with <input type="text" id="email" name="email"></input>.
+ <input type="submit" />
+</input>

@@ -5,33 +5,39 @@ use base 'DBIx::Class::Core';
 
 __PACKAGE__->table('games');
 __PACKAGE__->add_columns(
-                         id => {
-                                data_type => 'integer',
-                                is_auto_increment => 1,
-                               },
-                         # TicTacToe, Go, Chess, etc?
-                         rules => {
-                                  data_type => 'TEXT',
-                                 },
-                         state => {
-                                   data_type => 'TEXT',
-                                  },
-                        );
+			 id => {
+				data_type => 'integer',
+				is_auto_increment => 1,
+			       },
+			 # TicTacToe, Go, Chess, etc?
+			 rules => {
+				   data_type => 'TEXT',
+				  },
+			 state => {
+				   data_type => 'TEXT',
+				  },
+			);
 
 __PACKAGE__->inflate_column('state',
                             {
-                             inflate => sub {
-                               my ($json) = @_;
-
-                               return GameWork::Rules->deserialize($json);
-                             },
-                             deflate => sub {
-                               shift->serialize;
-                             },
+			     inflate => sub {
+			       my ($json) = @_;
+			       
+			       return GameWork::Rules->deserialize($json);
+			     },
+			     deflate => sub {
+			       shift->serialize;
+			     },
                             });
 
 __PACKAGE__->set_primary_key('id');
 __PACKAGE__->has_many('game_players', 'GameWork::Schema::Result::GamePlayer', 'game_id');
+
+sub current_player {
+  my ($game) = @_;
+
+  $game->search_related('game_players', {position => $game->state->current_turn})->single->player;
+}
 
 sub notify {
   my ($game) = @_;
@@ -52,6 +58,15 @@ sub notify {
 
   # If we've got users who have not accepted, we're done; a notification will go to the user who'se turn it is later, after people have accepted.
   return if $found_unaccepted;
+
+  # Nobody is still pending acceptance, so figure out whose turn it is, and notify them.
+  if ($game->current_player) {
+    $game->current_player->notify({
+				   type => 'turn',
+				   game => $game,
+				  });
+    return;
+  }
 
   die;
 }

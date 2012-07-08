@@ -1,0 +1,39 @@
+{
+    "name": "GameWork::Web",
+ 
+    "disable_component_resolution_regex_fallback": 1,
+    "enable_catalyst_header": 1,
+    "default_view": "TT",
+
+    "Plugin::Static::Simple": {
+    	"include_path": ["static"],
+    },
+
+    "Plugin::Authentication": {
+        "use_session": 1,
+        "use_userdata_from_session": 1,
+        "default": {
+            "credential": {
+                "class": "Password",
+                "password_field": "password",
+                "password_type" : "self_check",
+#                "password_type": "salted_hash",
+#                "password_args" => {
+#                    algorithm => "SHA-1",
+#                    salt_random => 20,
+#                },
+#                "password_salt_len": 8,
+            },
+            "store": {
+                "class": "DBIx::Class",
+                "user_model": "DB::Player"
+            },
+        },
+    },
+    
+    "Model::DB": {
+        "connect_info": {
+            "dsn": "dbi:SQLite:db/gamework.db"
+        }
+    }
+}
